@@ -51,8 +51,12 @@ class AppExceptionHandler extends ExceptionHandler
             $body->setCode($throwable->getCode());
             $body->setMsg($throwable->getMessage());
         }
-        //如果是debug模式
-        $body->setTrace($this->request, $throwable);
+
+        //是否打印调试信息
+        if (env('APP_ENV') != 'prod' || env('APP_ENV') != 'pre'){
+            $body->setTrace($this->request, $throwable);
+        }
+
         $stream = Helper::jsonEncode($body->getResponse());
 
         //如果是代码错误
