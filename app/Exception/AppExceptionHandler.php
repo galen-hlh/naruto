@@ -53,7 +53,7 @@ class AppExceptionHandler extends ExceptionHandler
         }
 
         //是否打印调试信息
-        if (env('APP_ENV') != 'prod' || env('APP_ENV') != 'pre'){
+        if (!in_array(env('APP_ENV'), ['prod', 'pre'])) {
             $body->setTrace($this->request, $throwable);
         }
 
