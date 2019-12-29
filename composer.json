@@ -41,7 +41,9 @@
         "hyperf/model-cache": "~1.1.0",
         "hyperf/elasticsearch": "~1.1.0",
         "hyperf/tracer": "~1.1.0",
-        "hyperf/testing": "^1.1"
+        "hyperf/testing": "^1.1",
+        "hyperf/validation": "^1.1",
+        "lcobucci/jwt": "^3.3"
     },
     "require-dev": {
         "swoft/swoole-ide-helper": "^4.2",
