@@ -6,10 +6,10 @@ namespace App\Exception\Business;
 
 class LoginException extends BusinessException
 {
-    public $code;
-    public $message;
-    const SYSTEM_ERR        = 10000;
-    public static $reasons  = [
-        self::SYSTEM_ERR => '系统繁忙，请稍后重试',
+    const USER_NOT_LOGIN = 10000;
+    const TOKEN_EXPIRE   = 10001;
+    public static $reasons = [
+        self::USER_NOT_LOGIN => '用户未登录',
+        self::TOKEN_EXPIRE   => 'token已经失效',
     ];
 }

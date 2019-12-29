@@ -11,7 +11,7 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token;
 
 
-class JwtAuth
+class Jwt
 {
     private $key = '';
 
@@ -50,6 +50,14 @@ class JwtAuth
      */
     public function setToken(string $token){
         $this->token = (new Parser())->parse((string)$token);
+    }
+
+    /**
+     * @return Token
+     */
+    public function getToken()
+    {
+        return $this->token;
     }
 
     /**

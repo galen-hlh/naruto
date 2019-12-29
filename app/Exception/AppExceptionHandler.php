@@ -43,11 +43,15 @@ class AppExceptionHandler extends ExceptionHandler
 
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
+        //http默认状态码
+        $httpStatus = 500;
+
         //设置异常响应
-        $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_EXCEPTION,  CommonConstHelper::HTTP_STATUS_METHOD_SERVER_ERROR_MSG);
+        $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_EXCEPTION, CommonConstHelper::HTTP_STATUS_METHOD_SERVER_ERROR_MSG);
 
         //如果是业务异常
-        if ($throwable instanceof BusinessException){
+        if ($throwable instanceof BusinessException) {
+            $httpStatus = 400;
             $body->setCode($throwable->getCode());
             $body->setMsg($throwable->getMessage());
         }
@@ -60,12 +64,12 @@ class AppExceptionHandler extends ExceptionHandler
         $stream = Helper::jsonEncode($body->getResponse());
 
         //如果是代码错误
-        if (!$throwable instanceof BusinessException){
+        if (!$throwable instanceof BusinessException) {
             $body->setTrace($this->request, $throwable);
-            $this->logger->error( Helper::jsonEncode($body->getResponse()));
+            $this->logger->error(Helper::jsonEncode($body->getResponse()));
         }
         return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
-            ->withStatus(500)->withBody(new SwooleStream($stream));
+            ->withStatus($httpStatus)->withBody(new SwooleStream($stream));
     }
 
     public function isValid(Throwable $throwable): bool

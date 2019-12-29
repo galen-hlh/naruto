@@ -10,6 +10,7 @@ use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 use Psr\Container\ContainerInterface;
+use Hyperf\Contract\ConfigInterface;
 
 abstract class BaseController
 {
@@ -30,4 +31,11 @@ abstract class BaseController
      * @var ResponseInterface
      */
     protected $response;
+
+
+    /**
+     * @Inject
+     * @var ConfigInterface
+     */
+    protected $config;
 }

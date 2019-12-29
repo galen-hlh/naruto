@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\V1\Controller;
+namespace App\Modules\V1\Controller\Admin;
+
+use App\Modules\V1\Controller\BaseController;
+use Hyperf\Utils\Context;
 
 class IndexController extends BaseController
 {
