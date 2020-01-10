@@ -49,9 +49,6 @@ class CommonConstHelper
     //默认当前页
     const CURRENT_PAGE_DEFAULT = 1;
 
-    //默认页码
-    const PAGE_DEFAULT = 1;
-
     //默认每页显示数
     const PAGE_SIZE_DEFAULT = 20;
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Helper;
 
 use function Composer\Autoload\includeFile;
-
+use Hyperf\Database\Model\Builder;
 /**
  * 助手类
  * Author: Galen
@@ -67,6 +67,23 @@ class Helper
                 includeFile($filePath);
             }
         }
+    }
+
+    public static function pagination(Builder $builder, $currentPage, $size)
+    {
+        $count = $builder->count();
+        $totalPages = ceil($count / $size);
+        $offset = ($currentPage - 1) * $size;
+        $list = $builder->offset($offset)->limit($size)->get();
+        return [
+            'list' => $list,
+            'page' => [
+                'total_counts' => $count,
+                'total_pages' => $totalPages,
+                'current_page' => $currentPage,
+                'size' => $size
+            ]
+        ];
     }
 }
 
