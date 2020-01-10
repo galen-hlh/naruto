@@ -70,7 +70,7 @@ class Jwt
 
         $builder = (new Builder())
             ->issuedAt($this->expTime)
-            ->expiresAt($time + 1);
+            ->expiresAt($time + $this->expTime);
 
         foreach ($this->privatePayloads as $name => $val) {
             $builder->withClaim($name, $val);

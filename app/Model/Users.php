@@ -3,11 +3,10 @@
 declare (strict_types=1);
 namespace App\Model;
 
-use Hyperf\DbConnection\Model\Model;
 /**
  * @property int $id 
  * @property string $account 
- * @property int $accout_type 
+ * @property int $account_type
  * @property string $password 
  * @property string $nickname 
  * @property string $email 
@@ -16,7 +15,7 @@ use Hyperf\DbConnection\Model\Model;
  * @property \Carbon\Carbon $created_at 
  * @property \Carbon\Carbon $updated_at 
  */
-class User extends BaseModel
+class Users extends BaseModel
 {
     /**
      * The table associated with the model.
@@ -35,5 +34,11 @@ class User extends BaseModel
      *
      * @var array
      */
-    protected $casts = ['id' => 'int', 'accout_type' => 'integer', 'is_del' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected $casts = ['id' => 'int', 'account_type' => 'integer', 'is_del' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+
+
+    public static function getUserInfoByUsername(string $username, array $fields=['*'])
+    {
+        return self::query()->where(['account'=>$username])->select($fields)->first();
+    }
 }
