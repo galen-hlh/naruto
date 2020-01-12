@@ -21,7 +21,8 @@ class ArticleController extends BaseController
      */
     public function get(int $id)
     {
-        return ['list' => ArticleService::getArticleInfo($id)];
+
+        return ['info' => ArticleService::getArticleInfo($id),];
     }
 
     /**
@@ -49,9 +50,9 @@ class ArticleController extends BaseController
     {
         $params = [
             'article_title' => $request->input('article_title', ''),
-            'description'   => $request->input('description', ''),
-            'content'       => $request->input('content', ''),
-            'user_id'       => User::getUserId(),
+            'description' => $request->input('description', ''),
+            'content' => $request->input('content', ''),
+            'user_id' => User::getUserId(),
         ];
 
         return ArticleService::addArticle($params);

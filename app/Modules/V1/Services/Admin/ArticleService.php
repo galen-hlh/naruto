@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\V1\Services\Admin;
 
+use App\Components\IdGenerator;
 use App\Helper\Helper;
 use App\Model\Article;
 
@@ -24,6 +25,7 @@ class ArticleService
     {
         $article = new Article();
         $article->setRawAttributes($params);
+        $article->id = IdGenerator::getId();
         return $article->save();
     }
 }
