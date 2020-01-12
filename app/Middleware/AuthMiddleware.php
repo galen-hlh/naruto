@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
-use App\Components\Jwt;
+use App\Components\Auth;
 use App\Components\User;
 use App\Exception\Business\LoginException;
 use Psr\Container\ContainerInterface;
@@ -33,16 +33,14 @@ class AuthMiddleware implements MiddlewareInterface
             throw new LoginException(LoginException::USER_NOT_LOGIN);
         }
 
-        $jwtConfig = config('jwt');
-        $jwt = new Jwt($jwtConfig['key']);
-        $jwt->setToken($tokens[0]);
-
-        if (!$jwt->validateToken()) {
+        $auth = Auth::getInstance();
+        $token = $auth->validateToken($tokens[0]);
+        if (!$token) {
             throw new LoginException(LoginException::TOKEN_EXPIRE);
         }
 
         //设置协程周期变量
-        $claims = $jwt->getToken()->getClaims();
+        $claims = $token->getClaims();
         User::setUserId($claims['user_id']);
         User::setUserType($claims['user_type']);
 

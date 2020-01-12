@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\V1\Services\Admin;
 
-use App\Components\Jwt;
+use App\Components\Auth;
 use App\Exception\Business\LoginException;
 use App\Model\Users;
 
@@ -22,8 +22,7 @@ class LoginService
             throw new LoginException(LoginException::USER_PASSWORD_ERROR);
         }
 
-        $jwtConfig = config('jwt');
-        $auth = new Jwt($jwtConfig['key']);
+        $auth = Auth::getInstance();
         $auth->setPayloads(['user_id' => $userInfo['id'], 'user_type' => $userInfo['account_type']]);
 
         return $auth->builderToken();
