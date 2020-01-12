@@ -13,7 +13,7 @@ use Hyperf\HttpServer\Contract\RequestInterface;
 class ArticleController extends BaseController
 {
     /**
-     * article info
+     * 文章详情
      * Author: Galen
      * Date: 2020/1/10 22:19
      * @param int $id
@@ -26,7 +26,7 @@ class ArticleController extends BaseController
     }
 
     /**
-     * article list
+     * 文章列表
      * Author: Galen
      * Date: 2020/1/10 22:19
      * @param RequestInterface $request
@@ -40,11 +40,10 @@ class ArticleController extends BaseController
     }
 
     /**
-     * add article
+     * 新增文章
      * Author: Galen
      * Date: 2020/1/10 22:19
      * @param RequestInterface $request
-     * @return bool
      */
     public function add(RequestInterface $request)
     {
@@ -55,6 +54,6 @@ class ArticleController extends BaseController
             'user_id' => User::getUserId(),
         ];
 
-        return ArticleService::addArticle($params);
+        ArticleService::addArticle($params);
     }
 }

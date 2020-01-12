@@ -13,10 +13,29 @@ declare(strict_types=1);
 namespace App\Model;
 
 use Hyperf\DbConnection\Model\Model;
-use Hyperf\ModelCache\Cacheable;
-use Hyperf\ModelCache\CacheableInterface;
 
-abstract class BaseModel extends Model implements CacheableInterface
+abstract class BaseModel extends Model
 {
-    use Cacheable;
+    /**
+     * 开启自动插入时间戳
+     */
+    public $timestamps = true;
+
+    /**
+     * 设置时间戳字段
+     */
+    const CREATED_AT = 'created_time';
+    const UPDATED_AT = 'updated_time';
+
+    /**
+     * 重写时间戳格式
+     * Author: Galen
+     * Date: 2020/1/12 23:14
+     * @param mixed $value
+     * @return int|string|null
+     */
+    public function fromDateTime($value)
+    {
+        return time();
+    }
 }

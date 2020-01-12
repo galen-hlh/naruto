@@ -26,6 +26,6 @@ class ArticleService
         $article = new Article();
         $article->setRawAttributes($params);
         $article->id = IdGenerator::getId();
-        return $article->save();
+        $article->save();
     }
 }
