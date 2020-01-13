@@ -38,7 +38,7 @@ class ResponseHelper
     {
         $trace = [
             'request_info'  => [
-                'path'      => $request->getUri(),
+                'path'      => $request->getRequestTarget(),
                 'method'    => $request->getMethod(),
                 'headers'   => $request->getHeaders(),
                 'body'      => $request->getBody(),

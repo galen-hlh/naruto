@@ -19,6 +19,7 @@ use App\Helper\ResponseHelper;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
+use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -43,6 +44,7 @@ class AppExceptionHandler extends ExceptionHandler
 
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
+
         //http默认状态码
         $httpStatus = 500;
 
@@ -56,6 +58,15 @@ class AppExceptionHandler extends ExceptionHandler
             $body->setMsg($throwable->getMessage());
         }
 
+        //如果是验证器异常
+        if ($throwable instanceof ValidationException){
+            $httpStatus = 422;
+            /** @var \Hyperf\Validation\ValidationException $throwable */
+            $msg = $throwable->validator->errors()->first();
+            $body->setCode(-1);
+            $body->setMsg($msg);
+        }
+
         //是否打印调试信息
         if (!in_array(env('APP_ENV'), ['prod', 'pre'])) {
             $body->setTrace($this->request, $throwable);
@@ -63,7 +74,7 @@ class AppExceptionHandler extends ExceptionHandler
 
         $stream = Helper::jsonEncode($body->getResponse());
 
-        //如果是代码错误
+        //如果是代码错误记录日志
         if (!$throwable instanceof BusinessException) {
             $body->setTrace($this->request, $throwable);
             $this->logger->error(Helper::jsonEncode($body->getResponse()));
