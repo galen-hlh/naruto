@@ -57,39 +57,53 @@ class ResponseMiddleware implements MiddlewareInterface
         $this->logger   = $logger;
     }
 
+    /**
+     * Author : helinhan@styd.cn
+     * Date   : 2020-01-17 15:30
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        //设置全局的响应对象
         $response = $handler->handle($request);
 
         //响应对象
-        $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_SUCCESS);
-        $httpStatusCode = $response->getStatusCode();
-        if ($httpStatusCode != 200){
-            $body->setCode($response->getStatusCode());
-        }
-
-        //设置全局统一的返回格式
-        $contents = $response->getBody()->getContents();
-
-        //没有返回的数据默认返回空对象
-        if ($contents){
-            $body->setData(Helper::jsonDecode($contents));
-        }
-
-        //404
-        if ($httpStatusCode == 404){
-            $body->setMsg(CommonConstHelper::HTTP_STATUS_PAGE_NOT_FOUND_MSG);
-        }
-
-        //405
-        if ($httpStatusCode == 405){
-            $body->setMsg(CommonConstHelper::HTTP_STATUS_METHOD_NOT_ALLOWED_MSG);
-        }
+        $body = $this->getBody($response->getStatusCode());
 
         //记录debug信息到日志
         $body->setTrace($request);
         $this->logger->info(Helper::jsonEncode($body->getResponse(true)));
 
-        return $response->withBody(new SwooleStream(Helper::jsonEncode($body->getResponse())));
+        return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
+            ->withBody(new SwooleStream(Helper::jsonEncode($body->getResponse())));
+    }
+
+    /**
+     * Author : helinhan@styd.cn
+     * Date   : 2020-01-17 15:30
+     * @param $httpStatusCode
+     * @return ResponseHelper
+     */
+    private function getBody($httpStatusCode){
+        $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_SUCCESS);
+        switch ($httpStatusCode){
+            case 200:
+                $body->setMsg("success");
+                break;
+            case 404:
+                $body->setCode($httpStatusCode);
+                $body->setMsg(CommonConstHelper::HTTP_STATUS_PAGE_NOT_FOUND_MSG);
+                break;
+            case 405:
+                $body->setCode($httpStatusCode);
+                $body->setMsg(CommonConstHelper::HTTP_STATUS_METHOD_NOT_ALLOWED_MSG);
+                break;
+            default:
+                break;
+        }
+
+        return $body;
     }
 }

@@ -76,11 +76,20 @@ class ResponseHelper
      * 设置返回的data字段
      * Author: Galen
      * Date: 2019/12/16 21:16
-     * @param array $data
+     * @param $data
      */
-    public function setData(array $data)
+    public function setData($data)
     {
-        $this->response['data'] = (Object)$data;
+        $d = [];
+        if (is_string($data)){
+            $d = Helper::jsonEncode($data);
+        }
+
+        if (is_array($d)){
+            $d = $data;
+        }
+
+        $this->response['data'] = (Object)$d;
     }
 
     /**
