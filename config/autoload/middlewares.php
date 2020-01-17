@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 return [
     'http' => [
-        App\Middleware\AppMiddleware::class,
-        Hyperf\Validation\Middleware\ValidationMiddleware::class
+        Hyperf\Validation\Middleware\ValidationMiddleware::class,
+        App\Middleware\ResponseMiddleware::class,
     ],
 ];

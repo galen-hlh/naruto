@@ -44,7 +44,8 @@
         "hyperf/testing": "^1.1",
         "hyperf/validation": "^1.1",
         "lcobucci/jwt": "^3.3",
-        "hyperf/snowflake": "^1.1"
+        "hyperf/snowflake": "^1.1",
+        "hyperf/task": "^1.1"
     },
     "require-dev": {
         "swoft/swoole-ide-helper": "^4.2",

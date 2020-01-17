@@ -15,6 +15,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Contract\StdoutLoggerInterface;
+use Throwable;
 
 /**
  * 全局中间件
@@ -23,7 +25,7 @@ use Hyperf\HttpServer\Contract\RequestInterface;
  * Class AppMiddleware
  * @package App\Middleware
  */
-class AppMiddleware implements MiddlewareInterface
+class ResponseMiddleware implements MiddlewareInterface
 {
     /**
      * @var ContainerInterface
@@ -31,45 +33,39 @@ class AppMiddleware implements MiddlewareInterface
     protected $container;
 
     /**
+     * @var StdoutLoggerInterface
+     */
+    protected $logger;
+
+
+    /**
      * @var HttpResponse
      */
     protected $response;
+
 
     /**
      * @var RequestInterface
      */
     protected $request;
 
-    public function __construct(ContainerInterface $container, HttpResponse $response, RequestInterface $request)
+    public function __construct(ContainerInterface $container, HttpResponse $response, RequestInterface $request, StdoutLoggerInterface $logger)
     {
         $this->container = $container;
         $this->response  = $response;
         $this->request   = $request;
+        $this->logger   = $logger;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        /**请求之前**/
         $response = $handler->handle($request);
 
-        /**请求之后**/
         //响应对象
         $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_SUCCESS);
-
-        //重写404错误
-        $statusCode = $response->getStatusCode();
-        if ($statusCode == 404){
-            $body->setCode(404);
-            $body->setMsg(CommonConstHelper::HTTP_STATUS_PAGE_NOT_FOUND_MSG);
-            return $response->withStatus(404)->withBody(new SwooleStream(Helper::jsonEncode($body->getResponse())));
-        }
-
-        //重写405错误
-        $statusCode = $response->getStatusCode();
-        if ($statusCode == 405){
-            $body->setCode(405);
-            $body->setMsg(CommonConstHelper::HTTP_STATUS_METHOD_NOT_ALLOWED_MSG);
-            return $response->withStatus(405)->withBody(new SwooleStream(Helper::jsonEncode($body->getResponse())));
+        $httpStatusCode = $response->getStatusCode();
+        if ($httpStatusCode != 200){
+            $body->setCode($response->getStatusCode());
         }
 
         //设置全局统一的返回格式
@@ -80,6 +76,20 @@ class AppMiddleware implements MiddlewareInterface
             $body->setData(Helper::jsonDecode($contents));
         }
 
-        return $this->response->json($body->getResponse());
+        //404
+        if ($httpStatusCode == 404){
+            $body->setMsg(CommonConstHelper::HTTP_STATUS_PAGE_NOT_FOUND_MSG);
+        }
+
+        //405
+        if ($httpStatusCode == 405){
+            $body->setMsg(CommonConstHelper::HTTP_STATUS_METHOD_NOT_ALLOWED_MSG);
+        }
+
+        //记录debug信息到日志
+        $body->setTrace($request);
+        $this->logger->info(Helper::jsonEncode($body->getResponse(true)));
+
+        return $response->withBody(new SwooleStream(Helper::jsonEncode($body->getResponse())));
     }
 }

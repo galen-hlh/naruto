@@ -44,7 +44,6 @@ class AppExceptionHandler extends ExceptionHandler
 
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
-
         //http默认状态码
         $httpStatus = 500;
 
@@ -59,26 +58,28 @@ class AppExceptionHandler extends ExceptionHandler
         }
 
         //如果是验证器异常
-        if ($throwable instanceof ValidationException){
+        if ($throwable instanceof ValidationException) {
             $httpStatus = 422;
             /** @var \Hyperf\Validation\ValidationException $throwable */
             $msg = $throwable->validator->errors()->first();
             $body->setCode(-1);
             $body->setMsg($msg);
         }
+        $body->setTrace($this->request, $throwable);
 
         //是否打印调试信息
+        $isDebug = false;
         if (!in_array(env('APP_ENV'), ['prod', 'pre'])) {
-            $body->setTrace($this->request, $throwable);
+            $isDebug = true;
         }
 
-        $stream = Helper::jsonEncode($body->getResponse());
+        $stream = Helper::jsonEncode($body->getResponse($isDebug));
 
         //如果是代码错误记录日志
         if (!$throwable instanceof BusinessException) {
-            $body->setTrace($this->request, $throwable);
-            $this->logger->error(Helper::jsonEncode($body->getResponse()));
+            $this->logger->error(Helper::jsonEncode($body->getResponse(true)));
         }
+
         return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
             ->withStatus($httpStatus)->withBody(new SwooleStream($stream));
     }

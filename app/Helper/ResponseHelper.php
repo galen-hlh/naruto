@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Helper;
-use phpDocumentor\Reflection\Types\Object_;
+
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
@@ -34,7 +34,7 @@ class ResponseHelper
      * @param ServerRequestInterface $request
      * @param Throwable $throwable
      */
-    public function setTrace(ServerRequestInterface $request,Throwable $throwable)
+    public function setTrace(ServerRequestInterface $request,Throwable $throwable = null)
     {
         $trace = [
             'request_info'  => [
@@ -42,24 +42,34 @@ class ResponseHelper
                 'method'    => $request->getMethod(),
                 'headers'   => $request->getHeaders(),
                 'body'      => $request->getBody(),
-            ],
-            'error_file'    => $throwable->getFile(),
-            'error_line'    => $throwable->getLine(),
-            'error_message' => $throwable->getMessage(),
-            'error_trace'   => $throwable->getTrace()
+            ]
         ];
+
+        if ($throwable){
+            $trace['error_info'] = [
+                'error_file'    => $throwable->getFile(),
+                'error_line'    => $throwable->getLine(),
+                'error_message' => $throwable->getMessage(),
+                'error_trace'   => $throwable->getTrace()
+            ];
+        }
         $this->response['trace'] = $trace;
     }
 
     /**
-     * 获取相应信息
+     * 获取响应信息
      * Author: Galen
      * Date: 2019/12/15 22:46
+     * @param $getTrace
      * @return array
      */
-    public function getResponse()
+    public function getResponse($getTrace=false)
     {
-        return $this->response;
+        $response = $this->response;
+        if (!$getTrace && isset($response['trace'])){
+            unset($response['trace']);
+        }
+        return $response;
     }
 
     /**
