@@ -43,7 +43,6 @@ class ValidateException extends ExceptionHandler
 
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
-        $httpStatus = 422;
         /** @var \Hyperf\Validation\ValidationException $throwable */
         $msg = $throwable->validator->errors()->first();
         $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_EXCEPTION, $msg);
@@ -53,8 +52,7 @@ class ValidateException extends ExceptionHandler
 
         $this->logger->info(Helper::jsonEncode($body->getResponse(true)));
 
-        return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
-            ->withStatus($httpStatus)->withBody(new SwooleStream($stream));
+        return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))->withBody(new SwooleStream($stream));
     }
 
     public function isValid(Throwable $throwable): bool

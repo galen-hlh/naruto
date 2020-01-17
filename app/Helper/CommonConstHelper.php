@@ -64,6 +64,9 @@ class CommonConstHelper
     //服务器繁忙code
     const CODE_STATUS_EXCEPTION = -1;
 
+    //200提示消息
+    const HTTP_STATUS_SUCCESS_MSG = 'success';
+
     // 404提示信息
     const HTTP_STATUS_PAGE_NOT_FOUND_MSG = 'page not found';
 

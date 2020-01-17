@@ -16,7 +16,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
-use Throwable;
 
 /**
  * 全局中间件
@@ -90,7 +89,7 @@ class ResponseMiddleware implements MiddlewareInterface
         $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_SUCCESS);
         switch ($httpStatusCode){
             case 200:
-                $body->setMsg("success");
+                $body->setMsg(CommonConstHelper::HTTP_STATUS_SUCCESS_MSG);
                 break;
             case 404:
                 $body->setCode($httpStatusCode);

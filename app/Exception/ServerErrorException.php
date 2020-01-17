@@ -44,9 +44,6 @@ class ServerErrorException extends ExceptionHandler
 
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
-        //http默认状态码
-        $httpStatus = 500;
-
         //设置异常响应
         $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_EXCEPTION, CommonConstHelper::HTTP_STATUS_METHOD_SERVER_ERROR_MSG);
         $body->setTrace($this->request, $throwable);
@@ -59,7 +56,7 @@ class ServerErrorException extends ExceptionHandler
         }
 
         return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
-            ->withStatus($httpStatus)->withBody(new SwooleStream($stream));
+            ->withBody(new SwooleStream($stream));
     }
 
     public function isValid(Throwable $throwable): bool

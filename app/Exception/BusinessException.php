@@ -43,7 +43,6 @@ class BusinessException extends ExceptionHandler
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
         //设置异常响应
-        $httpStatus = 400;
         $body = new ResponseHelper($throwable->getCode(), $throwable->getMessage());
         $body->setTrace($this->request, $throwable);
 
@@ -52,7 +51,7 @@ class BusinessException extends ExceptionHandler
         $this->logger->info(Helper::jsonEncode($body->getResponse(true)));
 
         return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
-            ->withStatus($httpStatus)->withBody(new SwooleStream($stream));
+            ->withBody(new SwooleStream($stream));
     }
 
     public function isValid(Throwable $throwable): bool
