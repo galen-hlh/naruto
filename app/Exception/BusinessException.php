@@ -12,19 +12,17 @@ declare(strict_types=1);
 
 namespace App\Exception;
 
-use App\Exception\Business\BusinessException;
 use App\Helper\CommonConstHelper;
 use App\Helper\Helper;
 use App\Helper\ResponseHelper;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
-use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
-class AppExceptionHandler extends ExceptionHandler
+class BusinessException extends ExceptionHandler
 {
     /**
      * @var StdoutLoggerInterface
@@ -44,41 +42,14 @@ class AppExceptionHandler extends ExceptionHandler
 
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
-        //http默认状态码
-        $httpStatus = 500;
-
         //设置异常响应
-        $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_EXCEPTION, CommonConstHelper::HTTP_STATUS_METHOD_SERVER_ERROR_MSG);
-
-        //如果是业务异常
-        if ($throwable instanceof BusinessException) {
-            $httpStatus = 400;
-            $body->setCode($throwable->getCode());
-            $body->setMsg($throwable->getMessage());
-        }
-
-        //如果是验证器异常
-        if ($throwable instanceof ValidationException) {
-            $httpStatus = 422;
-            /** @var \Hyperf\Validation\ValidationException $throwable */
-            $msg = $throwable->validator->errors()->first();
-            $body->setCode(-1);
-            $body->setMsg($msg);
-        }
+        $httpStatus = 400;
+        $body = new ResponseHelper($throwable->getCode(), $throwable->getMessage());
         $body->setTrace($this->request, $throwable);
 
-        //是否打印调试信息
-        $isDebug = false;
-        if (!in_array(env('APP_ENV'), ['prod', 'pre'])) {
-            $isDebug = true;
-        }
+        $stream = Helper::jsonEncode($body->getResponse());
 
-        $stream = Helper::jsonEncode($body->getResponse($isDebug));
-
-        //如果是代码错误记录日志
-        if (!$throwable instanceof BusinessException) {
-            $this->logger->error(Helper::jsonEncode($body->getResponse(true)));
-        }
+        $this->logger->info(Helper::jsonEncode($body->getResponse(true)));
 
         return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
             ->withStatus($httpStatus)->withBody(new SwooleStream($stream));
@@ -86,6 +57,10 @@ class AppExceptionHandler extends ExceptionHandler
 
     public function isValid(Throwable $throwable): bool
     {
-        return true;
+        if ($throwable instanceof BusinessException) {
+            return true;
+        }
+
+        return false;
     }
 }
