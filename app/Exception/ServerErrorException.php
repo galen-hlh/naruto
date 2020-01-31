@@ -48,14 +48,18 @@ class ServerErrorException extends ExceptionHandler
         $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_EXCEPTION, CommonConstHelper::HTTP_STATUS_METHOD_SERVER_ERROR_MSG);
         $body->setTrace($this->request, $throwable);
 
-        $stream = Helper::jsonEncode($body->getResponse());
+        if (in_array(env("APP_ENV"), ["prod", "pre"])) {
+            $stream = Helper::jsonEncode($body->getResponse());
+        } else {
+            $stream = Helper::jsonEncode($body->getResponse(true));
+        }
 
         //如果是代码错误记录日志
         if (!$throwable instanceof BusinessException) {
             $this->logger->error(Helper::jsonEncode($body->getResponse(true)));
         }
 
-        return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
+        return $response->withStatus(500)->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
             ->withBody(new SwooleStream($stream));
     }
 
