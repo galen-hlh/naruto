@@ -85,7 +85,7 @@ class ResponseHelper
             $d = Helper::jsonDecode($data);
         }
 
-        if (is_array($d)){
+        if (is_array($data)){
             $d = $data;
         }
 
