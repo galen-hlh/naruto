@@ -51,9 +51,9 @@ class ResponseMiddleware implements MiddlewareInterface
     public function __construct(ContainerInterface $container, HttpResponse $response, RequestInterface $request, StdoutLoggerInterface $logger)
     {
         $this->container = $container;
-        $this->response  = $response;
-        $this->request   = $request;
-        $this->logger   = $logger;
+        $this->response = $response;
+        $this->request = $request;
+        $this->logger = $logger;
     }
 
     /**
@@ -69,7 +69,7 @@ class ResponseMiddleware implements MiddlewareInterface
         $response = $handler->handle($request);
 
         //响应对象
-        $body = $this->getBody($response->getStatusCode());
+        $body = $this->getBody($response->getStatusCode(), $response->getBody()->getContents());
 
         //记录debug信息到日志
         $body->setTrace($request);
@@ -83,13 +83,16 @@ class ResponseMiddleware implements MiddlewareInterface
      * Author : helinhan@styd.cn
      * Date   : 2020-01-17 15:30
      * @param $httpStatusCode
+     * @param $bodyString
      * @return ResponseHelper
      */
-    private function getBody($httpStatusCode){
+    private function getBody($httpStatusCode, $bodyString)
+    {
         $body = new ResponseHelper(CommonConstHelper::CODE_STATUS_SUCCESS);
-        switch ($httpStatusCode){
+        switch ($httpStatusCode) {
             case 200:
                 $body->setMsg(CommonConstHelper::HTTP_STATUS_SUCCESS_MSG);
+                $body->setData($bodyString);
                 break;
             case 404:
                 $body->setCode($httpStatusCode);

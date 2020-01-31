@@ -82,7 +82,7 @@ class ResponseHelper
     {
         $d = [];
         if (is_string($data)){
-            $d = Helper::jsonEncode($data);
+            $d = Helper::jsonDecode($data);
         }
 
         if (is_array($d)){
