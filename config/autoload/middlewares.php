@@ -14,5 +14,6 @@ return [
     'http' => [
         Hyperf\Validation\Middleware\ValidationMiddleware::class,
         App\Middleware\ResponseMiddleware::class,
+        App\Middleware\CorsMiddleware::class,
     ],
 ];

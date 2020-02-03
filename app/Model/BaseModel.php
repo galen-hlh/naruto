@@ -22,6 +22,11 @@ abstract class BaseModel extends Model
     public $timestamps = true;
 
     /**
+     * 关闭自增主键
+     */
+    public $incrementing = false;
+
+    /**
      * 设置时间戳字段
      */
     const CREATED_AT = 'created_time';
