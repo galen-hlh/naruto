@@ -6,19 +6,20 @@ namespace App\Modules\V1\Services\Admin;
 
 use App\Components\Auth;
 use App\Exception\Business\LoginException;
+use App\Model\Administrator;
 use App\Model\Users;
 
 class LoginService
 {
     public static function login(string $username, string $password)
     {
-        $userInfo = Users::getUserInfoByUsername($username);
+        $userInfo = Administrator::getInfoByAccount($username);
 
         if (!$userInfo) {
             throw new LoginException(LoginException::USER_NOT_EXITS);
         }
 
-        if ($userInfo['password'] === hash("sha256", $password)) {
+        if ($userInfo['password'] !== hash("sha256", $password)) {
             throw new LoginException(LoginException::USER_PASSWORD_ERROR);
         }
 
