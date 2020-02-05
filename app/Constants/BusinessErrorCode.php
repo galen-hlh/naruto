@@ -28,24 +28,19 @@ class BusinessErrorCode extends AbstractConstants
     const USER_NOT_LOGIN = 10002;
 
     /**
-     * @Message("Token已经失效")
-     */
-    const USER_TOKEN_EXPIRE = 10003;
-
-    /**
      * @Message("用户名错误")
      */
-    const USER_ACCOUNT_ERROR = 10004;
+    const USER_ACCOUNT_ERROR = 10003;
 
     /**
      * @Message("密码错误")
      */
-    const USER_PASSWORD_ERROR = 10005;
+    const USER_PASSWORD_ERROR = 10004;
 
     /**
      * @Message("失败次数限制")
      */
-    const FAILURES_LIMIT = 10006;
+    const FAILURES_LIMIT = 10005;
 
 
 }

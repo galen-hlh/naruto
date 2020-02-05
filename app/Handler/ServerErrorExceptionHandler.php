@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
-use App\Exception\BusinessException;
 use App\Helper\CommonConstHelper;
 use App\Helper\Helper;
 use App\Helper\ResponseHelper;

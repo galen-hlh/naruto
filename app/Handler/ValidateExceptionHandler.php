@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Handler;
 
 use App\Constants\BusinessErrorCode;
-use App\Helper\CommonConstHelper;
 use App\Helper\Helper;
 use App\Helper\ResponseHelper;
 use Hyperf\Contract\StdoutLoggerInterface;

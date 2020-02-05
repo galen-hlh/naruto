@@ -6,7 +6,8 @@ namespace App\Middleware;
 
 use App\Components\Auth;
 use App\Components\User;
-use App\Exception\Business\LoginException;
+use App\Constants\BusinessErrorCode;
+use App\Exception\BusinessException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -30,13 +31,13 @@ class AuthMiddleware implements MiddlewareInterface
         // 验证token是否存在
         $tokens = $request->getHeader('token');
         if (empty($tokens)) {
-            throw new LoginException(LoginException::USER_NOT_LOGIN);
+            throw new BusinessException(BusinessErrorCode::USER_NOT_LOGIN);
         }
 
         $auth = Auth::getInstance();
         $token = $auth->validateToken($tokens[0]);
         if (!$token) {
-            throw new LoginException(LoginException::TOKEN_EXPIRE);
+            throw new BusinessException(BusinessErrorCode::USER_NOT_LOGIN);
         }
 
         //设置协程周期变量
