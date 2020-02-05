@@ -1,65 +1,28 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://doc.hyperf.io
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf-cloud/hyperf/blob/master/LICENSE
- */
 
 namespace App\Exception;
 
-use App\Helper\CommonConstHelper;
-use App\Helper\Helper;
-use App\Helper\ResponseHelper;
-use Hyperf\Contract\StdoutLoggerInterface;
-use Hyperf\ExceptionHandler\ExceptionHandler;
-use Hyperf\HttpMessage\Stream\SwooleStream;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use App\Constants\BusinessErrorCode;
+use Hyperf\Server\Exception\ServerException;
 use Throwable;
 
-class BusinessException extends ExceptionHandler
+/**
+ * 业务异常处理基类控制器
+ * Author: Galen
+ * Date: 2019/12/16 23:16
+ * Class BusinessException
+ * @package App\Exception\Business
+ */
+class BusinessException extends ServerException
 {
-    /**
-     * @var StdoutLoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var ServerRequestInterface
-     */
-    protected $request;
-
-    public function __construct(StdoutLoggerInterface $logger, ServerRequestInterface $request)
+    public function __construct(int $code = 0, string $message = null, Throwable $previous = null)
     {
-        $this->logger = $logger;
-        $this->request = $request;
-    }
-
-    public function handle(Throwable $throwable, ResponseInterface $response)
-    {
-        //设置异常响应
-        $body = new ResponseHelper($throwable->getCode(), $throwable->getMessage());
-        $body->setTrace($this->request, $throwable);
-
-        $stream = Helper::jsonEncode($body->getResponse());
-
-        $this->logger->info(Helper::jsonEncode($body->getResponse(true)));
-
-        return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
-            ->withBody(new SwooleStream($stream));
-    }
-
-    public function isValid(Throwable $throwable): bool
-    {
-        if ($throwable instanceof BusinessException) {
-            return true;
+        if (is_null($message)) {
+            $message = BusinessErrorCode::getMessage($code);
         }
 
-        return false;
+        parent::__construct($message, $code, $previous);
     }
 }

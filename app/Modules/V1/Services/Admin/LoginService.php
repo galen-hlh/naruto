@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\V1\Services\Admin;
 
 use App\Components\Auth;
-use App\Exception\Business\LoginException;
+use App\Constants\BusinessErrorCode;
+use App\Exception\BusinessException;
 use App\Model\Administrator;
-use App\Model\Users;
 
 class LoginService
 {
@@ -16,11 +16,11 @@ class LoginService
         $userInfo = Administrator::getInfoByAccount($username);
 
         if (!$userInfo) {
-            throw new LoginException(LoginException::USER_NOT_EXITS);
+            throw new BusinessException(BusinessErrorCode::USER_ACCOUNT_ERROR);
         }
 
         if ($userInfo['password'] !== hash("sha256", $password)) {
-            throw new LoginException(LoginException::USER_PASSWORD_ERROR);
+            throw new BusinessException(BusinessErrorCode::USER_PASSWORD_ERROR);
         }
 
         $auth = Auth::getInstance();

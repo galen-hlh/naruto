@@ -1,30 +1,21 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://doc.hyperf.io
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf-cloud/hyperf/blob/master/LICENSE
- */
 
-namespace App\Exception;
+namespace App\Handler;
 
-use App\Exception\Business\BusinessException;
+use App\Exception\BusinessException;
 use App\Helper\CommonConstHelper;
 use App\Helper\Helper;
 use App\Helper\ResponseHelper;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
-use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
-class ServerErrorException extends ExceptionHandler
+class ServerErrorExceptionHandler extends ExceptionHandler
 {
     /**
      * @var StdoutLoggerInterface
@@ -54,25 +45,15 @@ class ServerErrorException extends ExceptionHandler
             $stream = Helper::jsonEncode($body->getResponse(true));
         }
 
-        //如果是代码错误记录日志
-        if (!$throwable instanceof BusinessException) {
-            $this->logger->error(Helper::jsonEncode($body->getResponse(true)));
-        }
+        //记录错误日志
+        $this->logger->error(Helper::jsonEncode($body->getResponse(true)));
 
-        return $response->withStatus(500)->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
-            ->withBody(new SwooleStream($stream));
+        return $response->withStatus(500)->withBody(new SwooleStream($stream));
+
     }
 
     public function isValid(Throwable $throwable): bool
     {
-        if (!$throwable instanceof BusinessException) {
-            return true;
-        }
-
-        if (!$throwable instanceof ValidationException) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 }

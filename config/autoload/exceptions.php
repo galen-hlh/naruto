@@ -13,9 +13,9 @@ declare(strict_types=1);
 return [
     'handler' => [
         'http' => [
-            App\Exception\ServerErrorException::class,
-            App\Exception\ValidateException::class,
-            App\Exception\BusinessException::class,
+            App\Handler\ValidateExceptionHandler::class,
+            App\Handler\BusinessExceptionHandler::class,
+            App\Handler\ServerErrorExceptionHandler::class,
         ],
     ],
 ];

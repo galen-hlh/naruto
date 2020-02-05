@@ -6,6 +6,7 @@ namespace App\Middleware;
 
 use App\Helper\CommonConstHelper;
 use App\Helper\Helper;
+use Hyperf\Utils\Context;
 use App\Helper\ResponseHelper;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Psr\Container\ContainerInterface;
@@ -65,6 +66,25 @@ class ResponseMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        //设置跨域
+        $response = Context::get(ResponseInterface::class);
+        $response = $response
+            ->withHeader('Content-Type', 'application/json; charset=UTF-8')
+            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Credentials', 'true')
+            ->withHeader('Access-Control-Allow-Headers', 'DNT,Keep-Alive,User-Agent,Cache-Control,Content-Type,Authorization,Token,X-Request-Id');
+
+        //设置x-request-id
+        if ($this->request->getHeader('X-Request-Id')) {
+            $response = $response->withAddedHeader('X-Request-Id', $this->request->getHeader('X-Request-Id'));
+        }
+
+        Context::set(ResponseInterface::class, $response);
+
+        if ($request->getMethod() == 'OPTIONS') {
+            return $response;
+        }
+
         //设置全局的响应对象
         $response = $handler->handle($request);
 
@@ -75,8 +95,7 @@ class ResponseMiddleware implements MiddlewareInterface
         $body->setTrace($request);
         $this->logger->info(Helper::jsonEncode($body->getResponse(true)));
 
-        return $response->withAddedHeader('x-request-id', $this->request->getHeader('x-request-id'))
-            ->withBody(new SwooleStream(Helper::jsonEncode($body->getResponse())));
+        return $response->withBody(new SwooleStream(Helper::jsonEncode($body->getResponse())));
     }
 
     /**
