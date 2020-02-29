@@ -16,6 +16,11 @@ class GRpc extends BaseClient
 
     public function request($method, $request, $response)
     {
-        $this->simpleRequest($method, $request, [$response, 'decode']);
+        return $this->simpleRequest($method, $request, [$response, 'decode']);
+    }
+
+    public function bidiStreamingCall($method, $response)
+    {
+        return $this->clientStreamRequest($method, [$response, 'decode']);
     }
 }
