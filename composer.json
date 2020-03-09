@@ -47,7 +47,8 @@
     "hyperf/snowflake": "^1.1",
     "hyperf/task": "^1.1",
     "hyperf/grpc-client": "^1.1",
-    "grpc/grpc": "^1.27"
+    "grpc/grpc": "^1.27",
+    "hyperf/retry": "^1.1"
   },
   "require-dev": {
     "swoft/swoole-ide-helper": "^4.2",
